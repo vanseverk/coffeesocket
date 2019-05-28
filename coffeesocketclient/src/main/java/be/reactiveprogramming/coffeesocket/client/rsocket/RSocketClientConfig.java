@@ -12,12 +12,6 @@ import org.springframework.util.MimeTypeUtils;
 
 @Configuration
 public class RSocketClientConfig {
-
-    @Bean
-    RSocketRequester requester(RSocketRequester.Builder builder) {
-        return builder.connect(TcpClientTransport.create(7070)).block();
-    }
-
     @Bean
     RSocket rSocket() {
         return RSocketFactory

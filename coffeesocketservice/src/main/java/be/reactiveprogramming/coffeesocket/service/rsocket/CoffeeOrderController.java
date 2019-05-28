@@ -20,7 +20,7 @@ public class CoffeeOrderController {
 
     @MessageMapping("coffeeOrders")
     public Flux<CoffeeOrder> coffeeOrdersStream(CoffeeServerSubscription request) {
-        return Flux.range(1, 1000).map(n -> randomCoffee()).delayElements(Duration.of(1, SECONDS));
+        return Flux.range(1, 1000).map(n -> randomCoffee()).log().delayElements(Duration.of(1, SECONDS));
     }
 
     private CoffeeOrder randomCoffee() {

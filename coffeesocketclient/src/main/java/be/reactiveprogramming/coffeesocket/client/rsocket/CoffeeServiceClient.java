@@ -19,6 +19,8 @@ public class CoffeeServiceClient {
         return this.requester
                 .route("coffeeOrders")
                 .data(new CoffeeServerSubscription("WaiterName"))
-                .retrieveFlux(CoffeeOrder.class);
+                .retrieveFlux(CoffeeOrder.class)
+                .log()
+                .map(a -> null);
     }
 }
