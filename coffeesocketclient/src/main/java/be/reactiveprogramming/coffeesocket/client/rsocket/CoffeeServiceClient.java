@@ -20,7 +20,6 @@ public class CoffeeServiceClient {
                 .route("coffeeOrders")
                 .data(new CoffeeServerSubscription("WaiterName"))
                 .retrieveFlux(CoffeeOrder.class)
-                .log()
-                .map(a -> null);
+                .log();
     }
 }
