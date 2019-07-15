@@ -10,14 +10,15 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>be.reactiveprogramming</groupId>
-    <artifactId>coffeesocketservice</artifactId>
+    <artifactId>paymentservice</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>coffeesocketservice</name>
+    <name>paymentservice</name>
     <description>Demo project for RSocket</description>
 
     <properties>
         <java.version>11</java.version>
     </properties>
+
 
     <dependencies>
         <dependency>
@@ -29,18 +30,11 @@
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-rsocket</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.projectreactor.rabbitmq</groupId>
             <artifactId>reactor-rabbitmq</artifactId>
             <version>1.3.0.M1</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>
-        </dependency>
+
     </dependencies>
 
     <build>

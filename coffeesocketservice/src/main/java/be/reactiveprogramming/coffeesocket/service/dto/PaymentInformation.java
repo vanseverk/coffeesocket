@@ -3,14 +3,14 @@ package be.reactiveprogramming.coffeesocket.service.dto;
 public class PaymentInformation {
 
     private String tableNumber;
-    private int amount;
+    private int totalCost;
 
     public PaymentInformation() {
     }
 
-    public PaymentInformation(String tableNumber, int amount) {
+    public PaymentInformation(String tableNumber, int totalCost) {
         this.tableNumber = tableNumber;
-        this.amount = amount;
+        this.totalCost = totalCost;
     }
 
     public String getTableNumber() {
@@ -21,19 +21,11 @@ public class PaymentInformation {
         this.tableNumber = tableNumber;
     }
 
-    public int getAmount() {
-        return amount;
+    public int getTotalCost() {
+        return totalCost;
     }
 
-    public void setAmount(int amount) {
-        this.amount = amount;
-    }
-
-    @Override
-    public String toString() {
-        return "PaymentInformation{" +
-                "tableNumber='" + tableNumber + '\'' +
-                ", amount=" + amount +
-                '}';
+    public void setTotalCost(int totalCost) {
+        this.totalCost = totalCost;
     }
 }
