@@ -55,7 +55,7 @@ public class CoffeeOrderController {
 
     }
 
-    public Flux<CoffeeOrder> orders() {
+    private Flux<CoffeeOrder> orders() {
         return Flux.range(1, 1000)
                 .flatMap(n -> randomCoffee())
                 .log()

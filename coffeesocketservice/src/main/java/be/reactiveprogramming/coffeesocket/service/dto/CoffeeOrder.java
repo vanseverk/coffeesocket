@@ -38,4 +38,13 @@ public class CoffeeOrder {
     public void setAmount(int amount) {
         this.amount = amount;
     }
+
+    @Override
+    public String toString() {
+        return "CoffeeOrder{" +
+                "tableNumber='" + tableNumber + '\'' +
+                ", coffeeType='" + coffeeType + '\'' +
+                ", amount=" + amount +
+                '}';
+    }
 }

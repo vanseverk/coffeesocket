@@ -28,4 +28,12 @@ public class PaymentInformation {
     public void setTotalCost(int totalCost) {
         this.totalCost = totalCost;
     }
+
+    @Override
+    public String toString() {
+        return "PaymentInformation{" +
+                "tableNumber='" + tableNumber + '\'' +
+                ", totalCost=" + totalCost +
+                '}';
+    }
 }
