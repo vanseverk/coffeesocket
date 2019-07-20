@@ -1,18 +1,18 @@
-#CoffeeSocket Reactive Architecture demo
+# CoffeeSocket Reactive Architecture demo
 
-##Goal
+## Goal
 In this demo project a number of technologies are combined to display the use of [Reactive Streams](https://www.reactive-streams.org/) throughout an entire architecture.
 
-##Requirements
+## Requirements
 - A running RabbitMQ server (preferably on localhost)
 - A running MongoDB database server (preferably on localhost)
 
-##Usage
+## Usage
 Simply start up the PaymentService, CoffeeSocketService and CoffeeSocketClient applications.
 
 In case you don't have your RabbitMQ server and MongoDB database server running on localhost, you will need to apply some additional configuration in the `application.properties` files of the different applications.
 
-##What happens?
+## What happens?
 There is one single flow that moves through the different applications. This flow forms one big Reactive Stream, applying back pressure all the way.
 
 On a functional level, the flow starts with the **CoffeeSocketClient**, requesting paid CoffeeOrders from the **CoffeeSocketService**. These start with "Mock orders", CoffeeOrders we pretend entering the system. For these orders we retrieve the price by getting the Coffee information from a MongoDB database. After we retrieved the price, we create some payment information, that we send to the **PaymentService**. After the payment has been taken care of in the **PaymentService**, we finally notify the **CoffeeSocketService** about the CoffeeOrder.
