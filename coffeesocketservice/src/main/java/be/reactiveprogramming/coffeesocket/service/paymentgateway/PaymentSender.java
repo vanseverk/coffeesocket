@@ -29,7 +29,7 @@ public class PaymentSender {
     }
 
     @PreDestroy
-    public void foo() {
+    public void preDestroy() {
         rpcClient.close();
     }
 
