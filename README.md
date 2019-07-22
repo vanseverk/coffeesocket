@@ -19,9 +19,10 @@ On a functional level, the flow starts with the **CoffeeSocketClient**, requesti
 
 ![Architectural drawing](https://raw.githubusercontent.com/vanseverk/coffeesocket/master/architecture/coffeesocket_architecture.png)
 
+### CoffeeSocketClient
 On a technical level, the flow starts at the **CoffeeSocketClient** application. This application runs on [Spring Boot](https://spring.io/projects/spring-boot) along with [Project Reactor](https://projectreactor.io/) to facilitate its internal Reactive Streams. It also uses the Spring [RSocket](http://rsocket.io/) integration to enable Reactive Streams using TCP (or other technologies like Websocket, Aeron, etc) as the transport layer.
 
-After starting up the **CoffeeSocketClient** application, it will do a call to the **CoffeeSocketService** using an **RSocketRequester**. This call will set up a Reactive Stream between the **CoffeeSocketClient** and **CoffeeSocketService**. The **CoffeeSocketClient** will request a number of messages (e.g. "256") to the **CoffeeSocketService**, which will make the **CoffeeSocketService** send up to that number of results to the **CoffeeSocketClient**. Neither application has to block threads at any point, but simply react to new information flowing in. 
+After starting up the **CoffeeSocketClient** application, it will do a call to the **CoffeeSocketService** using an **RSocketRequester**. This call will set up a Reactive Stream between the **CoffeeSocketClient** and **CoffeeSocketService**. The **CoffeeSocketClient** will request a number of messages (e.g. "256") to the **CoffeeSocketService**, which will make the **CoffeeSocketService** send up to that number of results to the **CoffeeSocketClient**. Neither application has to block threads at any point, but simply react to new information flowing in.
 
 ```Java
 private final RSocketRequester requester;
@@ -35,6 +36,11 @@ public Flux<CoffeeOrder> receiveCoffeeOrders() {
 }
 ```
 
+The RSocket connection will apply a backpressure mechanism we can see in "normal" Reactive Streams as well. The **CoffeeSocketClient** will ask for a number of elements from the **CoffeeSocketService** which will then be delivered, as long as the **CoffeeSocketService** gets them from upstream. The moment the maximum amount of elements are delivered, more will be requested. This happens until the **CoffeeSocketService** signals the stream has completed or an error has occurred, which ends the stream.
+
+It's interesting to note that through using RSocket, the **CoffeeOrderClient** and **CoffeeOrderService** move from a Client-Server architecture to a Peer to Peer one. It's even possible to have a two-way connection of Fluxes, where both parties apply backpressure and flow data to each other!   
+
+### CoffeeSocketService
 The **CoffeeSocketService** also runs [Spring Boot](https://spring.io/projects/spring-boot) along with [Project Reactor](https://projectreactor.io/) and the Spring [RSocket](http://rsocket.io/) integration.
 It offers an RSocket message handler to receive the coffeeOrders request from the **CoffeeSocketClient**.
 
@@ -63,7 +69,9 @@ After we receive the `Coffee` object, our next goal is to send the cost of the o
 
 The **PaymentService** is some kind of stateless worker application. This means it's an ideal use case for [AMQP](https://www.amqp.org/) using a [RabbitMQ](https://www.rabbitmq.com/) server. By using AMQP queues, we can easily scale our worker applications horizontally. When we require more processing, we spin up more workers and vice versa.
  
-Because we want to make this a part of our Reactive Streams we use the [Reactor RabbitMQ](https://projectreactor.io/docs/rabbitmq/milestone/reference/) library. In it we find an `RpcClient` that we can use to do an asynchronous [request/reply](https://projectreactor.io/docs/rabbitmq/milestone/reference/#_request_reply) to the **PaymentService** and back again.  
+Because we want to make this a part of our Reactive Streams we use the [Reactor RabbitMQ](https://projectreactor.io/docs/rabbitmq/milestone/reference/) library. In it we find an `RpcClient` that we can use to do an asynchronous [request/reply](https://projectreactor.io/docs/rabbitmq/milestone/reference/#_request_reply) to the **PaymentService** and back again.
+
+The **CoffeeSocketService** does not need to actively wait for a reply by blocking a thread or applying busy waiting, but can just react further to new incoming events until a response is received on the reply queue.
 
 ```Java
 @PostConstruct
@@ -85,6 +93,7 @@ public Mono<PaymentResult> sendMessage(PaymentInformation paymentInformation) {
 }
 ```
 
+### PaymentService
 The **PaymentService** itself has an `RPCServer` running to handle the processing of the incoming message. After the processing is done, the reply will be placed on the reply queue so the processing can continue in the **CoffeeSocketService**
 
 ```Java
@@ -99,3 +108,10 @@ rpcServer.mainloop();
 ```
 
 After we receive the reply of the **PaymentService** in the **CoffeeSocketService** we finally pass the `CoffeeOrder` object along the Reactive Stream again, this time sending it over our original RSocket call as a result. When the **CoffeeSocketClient** receives it, its Reactive Stream continues and prints it to the command line, forming the end of our stream.
+
+## Conclusion
+In this project we looked at two interesting ways to handle communication through Reactive Streams in a Reactive architecture. 
+
+RSocket enables us a two-way communication stream between two different applications. This stream has all the advantages of Reactive Streams on top of the network level, and can even enable us to do two-way streams.
+
+We also took a look at using RabbitMQ to do RPC calls to worker applications. These stateless worker applications can scale easily because they're behind a queue, while we can be sure we don't kill our application's performance by blocking threads waiting for a reply. 
