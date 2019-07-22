@@ -110,7 +110,7 @@ rpcServer.mainloop();
 After we receive the reply of the **PaymentService** in the **CoffeeSocketService** we finally pass the `CoffeeOrder` object along the Reactive Stream again, this time sending it over our original RSocket call as a result. When the **CoffeeSocketClient** receives it, its Reactive Stream continues and prints it to the command line, forming the end of our stream.
 
 ## Conclusion
-In this project we looked at two interesting ways to handle communication through Reactive Streams in a Reactive architecture. 
+In this project we looked at two interesting ways to handle communication through Reactive Streams in a Reactive architecture. By making one big Reactive Stream over Project Reactor in multiple JVMs, along with an  RSocket connection and RabbitMQ server we were able to apply backpressure from front to back. New CoffeeOrders streaming in will go over all these moving parts, but no blocking needs to happen at any point. 
 
 RSocket enables us a two-way communication stream between two different applications. This stream has all the advantages of Reactive Streams on top of the network level, and can even enable us to do two-way streams.
 
